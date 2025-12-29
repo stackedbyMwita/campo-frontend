@@ -50,8 +50,8 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive">
-          <LogOut className="mr-2 h-4 w-4" />
+        <DropdownMenuItem className="text-destructive focus:text-destructive" variant="destructive">
+          <LogOut className="mr-2 h-4 w-4 text-destructive focus:text-destructive" />
           <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

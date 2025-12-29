@@ -40,6 +40,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ThemeToggle } from "./theme-toggle"
 import { usePathname } from "next/navigation"
+import { Separator } from "./ui/separator"
 
 // Menu Configuration
 const data = {
@@ -159,6 +160,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
 
+      <Separator orientation="horizontal" className="mr-2 h-4" />
+
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
@@ -177,7 +180,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </span>
               </div>
             </SidebarMenuButton>
-              <ThemeToggle/>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
