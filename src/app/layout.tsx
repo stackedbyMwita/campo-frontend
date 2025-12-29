@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Jost, Outfit, BBH_Hegarty } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/provider/theme-provider";
+import { GlobalProviders } from "@/provider/global-providers";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -37,18 +37,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${outfit.variable} ${jost.variable} antialiased font-sans`}
-      >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+      <body className={`${outfit.variable} ${jost.variable} antialiased font-sans`} >
+        <GlobalProviders>
           {children}
-        </ThemeProvider>
-        
+        </GlobalProviders>
       </body>
     </html>
   );

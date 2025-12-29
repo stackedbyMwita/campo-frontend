@@ -7,6 +7,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/theme-toggle" // Using your toggle
 import Navbar from "@/components/app-navbar"
+import { PaymentGuard } from "@/components/guards/payment-guard"
 
 
 export default function DashboardLayout({

@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { User, CreditCard, Settings, LogOut } from "lucide-react"
+import { useAuth } from "@/context/auth-context"
 
 export function UserNav() {
+  const { user, logout } = useAuth()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -28,9 +30,9 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Alex Mwita</p>
+            <p className="text-sm font-medium leading-none">{user?.firstName} {user?.lastName}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              alex@campo.com
+              {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -50,7 +52,11 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive" variant="destructive">
+        <DropdownMenuItem 
+          className="text-destructive focus:text-destructive"
+          variant="destructive"
+          onClick={() => logout()}
+        >
           <LogOut className="mr-2 h-4 w-4 text-destructive focus:text-destructive" />
           <span>Log out</span>
         </DropdownMenuItem>
