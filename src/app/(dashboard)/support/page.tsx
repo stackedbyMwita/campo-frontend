@@ -1,13 +1,17 @@
+import { PageTitle } from "@/components/page-title";
+
 export default function Supportpage() {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4">
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <h1 className="font-bold text-2xl">Support Page</h1>
-        <div className="aspect-video rounded-xl bg-muted/50" />
-        <div className="aspect-video rounded-xl bg-muted/50" />
-        <div className="aspect-video rounded-xl bg-muted/50" />
-      </div>
-      <div className="min-h-screen flex-1 rounded-xl bg-muted/50" />
+        <PageTitle 
+          title="Support Center" 
+          description="Need help? Open a ticket or browse our FAQs." 
+        />
+        
+        {/* Ticket form or list goes here */}
+        <div className="h-96 rounded-xl border border-dashed" />
+    </div>
     </div>
   )
 }
