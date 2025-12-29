@@ -113,7 +113,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     asChild
                     tooltip={item.title}
                     isActive={isActive}
-                    className="px-4 py-6 relative data-[active=true]:text-primary data-[active=true]:border-l-2"
+                    className="px-4 py-6 relative data-[active=true]:text-primary data-[active=true]:border-l-2 data-[active=true]:bg-primary/10"
                   >
                     <a href={item.url}>
                       <item.icon />
@@ -164,7 +164,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground "
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={data.user.avatar} alt={data.user.name} />
@@ -177,9 +177,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </span>
               </div>
             </SidebarMenuButton>
-            <div className="mr-2 bg-accent h-12 w-12 flex items-center justify-center rounded-md">
               <ThemeToggle/>
-            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

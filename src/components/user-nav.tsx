@@ -17,9 +17,9 @@ export function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button 
-          variant="ghost" 
+          variant="secondary" 
           size="icon" 
-          className="rounded-full relative h-8 w-8"
+          className="rounded-full relative"
         >
           <User className="h-5 w-5" />
         </Button>

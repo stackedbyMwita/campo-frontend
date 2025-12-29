@@ -16,21 +16,21 @@ export function NotificationsSheet() {
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          variant="ghost"
+          variant="secondary"
           size="icon"
           aria-label="Open notifications"
           className="rounded-full relative"
         >
           <Bell className="h-5 w-5" />
           {/* Optional: Red dot for unread status */}
-          <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-destructive border-2 border-background" />
+          <span className="absolute top-0.5 right-1 h-3 w-3 rounded-full bg-destructive border-2 border-background" />
         </Button>
       </SheetTrigger>
       
       {/* side="right" makes it slide from right. 
          w-full sm:w-[540px] makes it full width on mobile, wider on desktop.
       */}
-      <SheetContent side="right" className="w-full sm:w-[400px] pr-0">
+      <SheetContent side="right" className="w-full sm:w-100 pr-0">
         <SheetHeader className="px-6 border-b pb-4">
           <SheetTitle>Notifications</SheetTitle>
           <SheetDescription>
