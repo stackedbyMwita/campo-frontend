@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/theme-toggle" // Using your toggle
+import Navbar from "@/components/app-navbar"
 
 
 export default function DashboardLayout({
@@ -19,18 +20,7 @@ export default function DashboardLayout({
       <SidebarInset>
         {/* TOP NAVBAR */}
         <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b bg-background transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4 w-full justify-between">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <h1 className="font-heading text-sm font-medium text-foreground/80">
-                Dashboard
-              </h1>
-            </div>
-            
-            {/* Right Side of Navbar */}
-            <ThemeToggle />
-          </div>
+          <Navbar />
         </header>
 
         {/* MAIN CONTENT AREA */}

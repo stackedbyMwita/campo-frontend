@@ -1,8 +1,8 @@
-export default function DashboardPage() {
+export default function Supportpage() {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4">
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <h1 className="font-bold text-2xl">Dashboard Page</h1>
+        <h1 className="font-bold text-2xl">Support Page</h1>
         <div className="aspect-video rounded-xl bg-muted/50" />
         <div className="aspect-video rounded-xl bg-muted/50" />
         <div className="aspect-video rounded-xl bg-muted/50" />
