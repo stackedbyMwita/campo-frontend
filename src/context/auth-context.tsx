@@ -4,12 +4,13 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { useRouter } from "next/navigation";
 import { User } from "@/types/api";
 import { authAPI } from "@/services/api";
+import { LoginCredentials, RegisterCredentials } from "@/types/auth";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (data: any) => Promise<void>;
-  register: (data: any) => Promise<void>;
+  login: (data: LoginCredentials) => Promise<void>;
+  register: (data: RegisterCredentials) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -52,10 +53,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refreshUser]);
 
 
-  const register = async (credentials: any) => {
+  const register = async (credentials: RegisterCredentials) => {
     // Calls the service, which saves the token
     const response = await authAPI.register(credentials);
-    const userObj = response.data?.user || response.user || response;
+    const userObj = response.data?.user;
     // Updates the Global State
     setUser(userObj);
     
@@ -64,9 +65,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // 2. Login Function
-  const login = async (credentials: any) => {
+  const login = async (credentials: LoginCredentials) => {
     const response = await authAPI.login(credentials);
-    const userObj = response.data?.user || response.user || response;
+    const userObj = response.data?.user;
     setUser(userObj);
     router.push("/dashboard");
   };
