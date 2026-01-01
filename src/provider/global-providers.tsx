@@ -44,15 +44,10 @@ export function GlobalProviders({ children }: { children: React.ReactNode }) {
       >
         <AuthProvider>
           <Toaster position="top-right" richColors />
-          {isPublicRoute ? (
-            children
-          ) : (
-            <PaymentGuard>
-              {children}
-            </PaymentGuard>
-          )}
+          {isPublicRoute ? ( children )
+          : ( <PaymentGuard> {children} </PaymentGuard> )}
         </AuthProvider>
-    r</ThemeProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

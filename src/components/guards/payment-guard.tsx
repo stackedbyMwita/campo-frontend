@@ -9,12 +9,12 @@ interface PaymentGuardProps {
 }
 
 export function PaymentGuard({ children }: PaymentGuardProps) {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
 
   // 1. Loading State
   // While fetching the user profile, show a full-screen loader.
   // This prevents the "Flash of Unpaid Content"
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />

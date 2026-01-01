@@ -1,14 +1,13 @@
-import { DepositResponse, Withdrawal } from "@/types/api";
+import { DepositResponse, TaskSubmitResponse, Withdrawal } from "@/types/api";
+
 import { LoginCredentials, RegisterCredentials } from "@/types/auth";
-import { InitiatePaymentRequest } from "@/types/payment";
 import { api, setAccessToken } from "@/lib/axios";
 import { 
   ApiResponse, PaginatedResponse, 
   User, DepositData, WithdrawalData, Transaction, 
-  Task, TaskHistoryItem, ReferralUser, Notification, SupportTicket,
-  // Payloads
+  TaskHistoryItem, ReferralUser, Notification, SupportTicket,
   DepositRequest, CallbackRequest, WithdrawRequest, 
-  TaskSubmitRequest, ChangePasswordRequest, TicketRequest 
+  TaskSession, ChangePasswordRequest, TicketRequest 
 } from "@/types/api";
 
 // 1. AUTHENTICATION
@@ -63,6 +62,15 @@ export const authAPI = {
   }
 };
 
+// 7. WALLET (Helper to access wallet data from Profile)
+export const walletAPI = {
+  getBalance: async () => {
+    // We reuse the profile endpoint since balance is inside 'user.wallet'
+    const response = await api.get<ApiResponse<User>>("/users/me");
+    return response.data.data.wallet; 
+  },
+};
+
 // 2. PAYMENTS
 export const paymentAPI = {
   // Route: POST /payments/deposit
@@ -95,24 +103,24 @@ export const paymentAPI = {
 // 3. TASKS
 export const taskAPI = {
   // Route: GET /tasks/daily
-  // JSON: { success: true, count: n, data: [ ...Task... ] }
-  getDailyTasks: async () => {
-    // Note: The JSON has a 'count' field at root, so we define a custom wrapper
-    const response = await api.get<{ success: boolean; count: number; data: Task[] }>("/tasks/daily");
-    return response.data.data;
+  // Returns: A single active session OR null (if limit reached)
+  getDailyTask: async () => {
+    const response = await api.get<{ success: boolean; data: TaskSession | null }>("/tasks/daily");
+    return response.data.data; 
   },
 
-  // Route: POST /tasks/:id/submit
-  // JSON: { success: true, data: { newBalance, rewardAmount } }
-  submitTask: async (taskId: string, data: TaskSubmitRequest) => {
-    const response = await api.post<ApiResponse<{ newBalance: number; rewardAmount: number }>>(`/tasks/${taskId}/submit`, data);
+  // Route: POST /tasks/submit
+  // Payload: { sessionId: string }
+  submitTask: async (sessionId: string) => {
+    const response = await api.post<TaskSubmitResponse>("/tasks/submit", { sessionId });
     return response.data.data;
   },
 
   // Route: GET /users/tasks/history
   getHistory: async (page = 1) => {
+    // Backend now returns TaskSession documents
     const response = await api.get<PaginatedResponse<TaskHistoryItem>>(`/users/tasks/history?page=${page}`);
-    return response.data; // Returns full object with pagination
+    return response.data;
   }
 };
 

@@ -17,8 +17,12 @@ export interface PaginatedResponse<T> {
     totalPages: number;
     currentPage: number;
     itemsPerPage: number;
+    
+    // 👈 ADD THESE NEW FIELDS
+    totalActive?: number;   
+    totalInactive?: number;
   };
-}// User Data (Based on your backend response)
+}
 
 export interface Wallet {
   referralEarnings: number;
@@ -41,6 +45,7 @@ export interface User {
   email: string;
   phoneNumber: string;
   role: "user" | "admin";
+  tier: number,
   isActive: boolean;
   isVerified: boolean;
   referralCode: string;
@@ -56,17 +61,6 @@ export interface DepositResponse {
   checkoutRequestID: string;
   status: string;
   reference: string;
-}
-
-export interface Task {
-  _id: string;
-  title: string;
-  description: string;
-  type: TaskQuestionType // Add other types if needed
-  isActive: boolean;
-  questions: TaskQuestion[];
-  reward: number;
-  expiresAt: string;
 }
 
 // Withdrawal Types
@@ -115,19 +109,6 @@ export interface TaskQuestion {
   text: string;
   options: string[];
   expectedAnswer?: string; // Hidden in frontend usually, but in your JSON it's there
-}
-
-
-export interface TaskHistoryItem {
-  _id: string;
-  taskId?: string; 
-  status: "PENDING" | "APPROVED" | "REJECTED";
-  proof?: string;
-  durationSeconds: number;
-  createdAt: string;
-  // Some history items in your JSON (aggregated ones) have 'tasksCompletedCount' instead of taskId
-  tasksCompletedCount?: number; 
-  completedTaskIds?: string[];
 }
 
 export interface ReferralUser {
@@ -184,8 +165,7 @@ export interface WithdrawRequest {
 }
 
 export interface TaskSubmitRequest {
-  proof: string;
-  durationSeconds: number;
+  sessionId: number;
 }
 
 export interface ChangePasswordRequest {
@@ -197,4 +177,104 @@ export interface TicketRequest {
   subject: string;
   category: string;
   message: string;
+}
+
+// 1. Transaction Statuses
+// Based on your JSON: "PENDING", "COMPLETED", "FAILED"
+export enum TransactionStatus {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED' // Good to have just in case
+}
+
+// 2. Transaction Types
+// Based on your JSON: "DEPOSIT", "WITHDRAWAL", "BONUS"
+// Plus standard types needed for wallet history
+export enum TransactionType {
+  DEPOSIT = 'DEPOSIT',              // User topping up
+  WITHDRAWAL = 'WITHDRAWAL',        // User cashing out
+  TASK_EARNING = 'TASK_EARNING',    // Money earned from doing a task
+  REFERRAL_REWARD = 'REFERRAL_REWARD', // Money earned from inviting a friend
+  ADMIN_CORRECTION = 'ADMIN_CORRECTION', // Admin manually changing balance
+  BONUS = 'BONUS'                   // System bonuses
+}
+
+export interface Question {
+  _id: string;
+  text: string;
+  type: 'mcq' | 'text';
+  options: string[];
+}
+
+export interface TaskSession {
+  sessionId: string;
+  questions: Question[];
+  reward: number;
+  expiresAt: string;
+}
+
+export interface TaskHistoryItem {
+  _id: string;
+  status: 'COMPLETED' | 'EXPIRED';
+  rewardAmount: number;
+  createdAt: string;
+  completedAt: string;
+  questions: any[]; // Populated or IDs
+}
+
+
+export interface Task {
+  id: string;
+  title: string;
+  rewardAmount: number;
+  description?: string;
+  status: "OPEN" | "COMPLETED";
+}
+
+export interface HistoryItem {
+  id: string;
+  taskId: string;
+  taskTitle: string;
+  completedAt: string;
+  amountEarned: number;
+}
+
+export interface TaskSubmitRequest {
+  proof?: string; // or whatever your submit data is
+}
+
+export interface TaskSubmitResponse {
+  success: boolean;
+  data: {
+    success: boolean;
+    reward: number;
+  };
+}
+// 1. The Single Task Session (since getDailyTask returns this)
+export interface TaskSession {
+  taskId: string;
+  title: string;
+  description?: string;
+  rewardAmount: number;
+  status: "OPEN" | "COMPLETED";
+}
+
+// 2. The History Item
+export interface TaskHistoryItem {
+  id: string;
+  taskTitle: string;
+  amountEarned: number;
+  completedAt: string;
+}
+
+// 3. Pagination Wrapper (since getHistory returns this)
+
+// 4. Submit Response (The nested structure you requested)
+export interface TaskSubmitResponse {
+  success: boolean;
+  data: {
+    success: boolean;
+    reward: number;
+  };
 }
