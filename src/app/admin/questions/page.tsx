@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
+// 1. Import keepPreviousData if you are on an older TanStack version, 
+// but in v5 we use a function for placeholderData.
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/services/admin-api";
 import { format } from "date-fns";
@@ -14,8 +16,8 @@ import {
   PlayCircle, 
   PauseCircle,
   FileText,
-  HelpCircle,
-  List
+  List,
+  AlertCircle
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -44,75 +46,78 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
-// --- 1. DEFINE EXACT TYPE BASED ON YOUR JSON ---
-interface TaskData {
+// --- TYPE DEFINITION ---
+interface QuestionData {
   _id: string;
-  title: string;
-  description: string;
-  type: 'mcq' | 'text' | 'mixed';
-  rewardMultiplier: number;
+  text: string;
+  type: 'mcq' | 'text';
+  options: string[];
   isActive: boolean;
-  expiresAt: string;
   createdAt: string;
-  questions: any[]; // We don't need full question detail for the table
+  updatedAt: string;
 }
 
-export default function TasksPage() {
+export default function QuestionsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  // FETCH TASKS
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin", "tasks", page],
-    queryFn: () => adminApi.getTasks(page, 20), // Fetching 20 items per page as per your JSON
+  // --- 1. FETCH QUESTIONS (PAGINATED) ---
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["admin", "questions", page], // ⚡ Key includes page, so changing state triggers refetch
+    queryFn: () => adminApi.getQuestions(page, 20), // ⚡ Fetch 20 items per page
+    placeholderData: (prev) => prev, // ⚡ CRITICAL: Keeps page 1 data visible while page 2 loads
   });
 
   // MUTATION: DELETE
   const deleteMutation = useMutation({
-    mutationFn: adminApi.deleteTask,
+    mutationFn: adminApi.deleteQuestion,
     onSuccess: () => {
-      toast.success("Task deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["admin", "tasks"] });
+      toast.success("Question deleted");
+      queryClient.invalidateQueries({ queryKey: ["admin", "questions"] });
       setDeleteId(null);
     },
-    onError: () => toast.error("Failed to delete task")
+    onError: () => toast.error("Failed to delete")
   });
 
   // MUTATION: TOGGLE STATUS
   const toggleStatusMutation = useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) => 
-      adminApi.updateTask(id, { isActive }),
+      adminApi.updateQuestion(id, { isActive }),
     onSuccess: () => {
-      toast.success("Task status updated");
-      queryClient.invalidateQueries({ queryKey: ["admin", "tasks"] });
+      toast.success("Status updated");
+      queryClient.invalidateQueries({ queryKey: ["admin", "questions"] });
     }
   });
 
-  // --- 2. FRONTEND SEARCH LOGIC ---
-  // Filter the fetched data based on the search input
-  const filteredTasks = useMemo(() => {
-    const tasks = (data?.data as TaskData[]) || [];
-    if (!search) return tasks;
-    return tasks.filter((task) => 
-      task.title.toLowerCase().includes(search.toLowerCase()) ||
-      task.description.toLowerCase().includes(search.toLowerCase())
+  // --- 2. FRONTEND SEARCH ---
+  const filteredQuestions = useMemo(() => {
+    // Cast to unknown first to fix the Type mismatch error you saw earlier
+    const list = (data?.data as unknown as QuestionData[]) || [];
+    if (!search) return list;
+    return list.filter((item) => 
+      item.text.toLowerCase().includes(search.toLowerCase())
     );
   }, [data, search]);
 
   // --- 3. COLUMNS DEFINITION ---
-  const columns: ColumnDef<TaskData>[] = [
+  const columns: ColumnDef<QuestionData>[] = [
     {
-      accessorKey: "title",
-      header: "Task Details",
+      accessorKey: "text",
+      header: "Question Text",
       cell: ({ row }) => (
-        <div className="flex flex-col max-w-[300px]">
-          <span className="font-medium truncate">{row.original.title}</span>
-          <span className="text-xs text-muted-foreground truncate">
-            {row.original.description}
+        <div className="max-w-[400px]">
+          <span className="font-medium line-clamp-2" title={row.original.text}>
+            {row.original.text}
           </span>
+          {row.original.type === 'mcq' && row.original.options.length > 0 && (
+            <p className="text-xs text-muted-foreground mt-1 truncate">
+              Options: {row.original.options.join(", ")}
+            </p>
+          )}
         </div>
       )
     },
@@ -121,61 +126,46 @@ export default function TasksPage() {
       header: "Type",
       cell: ({ row }) => {
         const type = row.original.type;
-        let icon = <HelpCircle className="w-3 h-3 mr-1" />;
-        let color = "bg-slate-100 text-slate-700";
-
-        if (type === 'mcq') {
-           icon = <List className="w-3 h-3 mr-1" />;
-           color = "bg-blue-50 text-blue-700 border-blue-200";
-        } else if (type === 'text') {
-           icon = <FileText className="w-3 h-3 mr-1" />;
-           color = "bg-orange-50 text-orange-700 border-orange-200";
-        }
-
         return (
-          <Badge variant="outline" className={`capitalize font-normal ${color} pl-1.5`}>
-            {icon} {type}
+          <Badge 
+            variant="outline" 
+            className={`capitalize font-normal pl-1.5 ${
+              type === 'mcq' 
+                ? "bg-blue-50 text-blue-700 border-blue-200" 
+                : "bg-orange-50 text-orange-700 border-orange-200"
+            }`}
+          >
+            {type === 'mcq' ? <List className="w-3 h-3 mr-1" /> : <FileText className="w-3 h-3 mr-1" />}
+            {type === 'mcq' ? 'Multiple Choice' : 'Text Input'}
           </Badge>
         )
       }
-    },
-    {
-      accessorKey: "rewardMultiplier",
-      header: "Reward",
-      cell: ({ row }) => (
-        <div className="flex items-center">
-          <Badge variant="secondary" className="font-mono text-xs">
-            x{row.original.rewardMultiplier.toFixed(1)}
-          </Badge>
-        </div>
-      )
     },
     {
       accessorKey: "isActive",
       header: "Status",
       cell: ({ row }) => (
-        <Badge variant={row.original.isActive ? "default" : "secondary"} className={row.original.isActive ? "bg-green-600 hover:bg-green-700" : ""}>
+        <Badge 
+          variant={row.original.isActive ? "default" : "secondary"} 
+          className={row.original.isActive ? "bg-green-600 hover:bg-green-700" : ""}
+        >
           {row.original.isActive ? "Active" : "Inactive"}
         </Badge>
       )
     },
     {
-      accessorKey: "expiresAt",
-      header: "Expires",
-      cell: ({ row }) => {
-        const date = new Date(row.original.expiresAt);
-        const isExpired = date < new Date();
-        return (
-          <span className={`text-xs ${isExpired ? "text-red-500 font-medium" : "text-muted-foreground"}`}>
-            {format(date, "MMM d, yyyy")}
-          </span>
-        )
-      }
+      accessorKey: "createdAt",
+      header: "Created",
+      cell: ({ row }) => (
+        <span className="text-xs text-muted-foreground">
+          {format(new Date(row.original.createdAt), "MMM d, yyyy")}
+        </span>
+      )
     },
     {
       id: "actions",
       cell: ({ row }) => {
-        const task = row.original;
+        const item = row.original;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -187,15 +177,15 @@ export default function TasksPage() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem asChild>
-                <Link href={`/admin/tasks/${task._id}`} className="cursor-pointer">
-                  <Pencil className="mr-2 h-4 w-4" /> Edit Task
+                <Link href={`/admin/questions/${item._id}`} className="cursor-pointer">
+                  <Pencil className="mr-2 h-4 w-4" /> Edit
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => toggleStatusMutation.mutate({ id: task._id, isActive: !task.isActive })}
+                onClick={() => toggleStatusMutation.mutate({ id: item._id, isActive: !item.isActive })}
                 className="cursor-pointer"
               >
-                {task.isActive ? (
+                {item.isActive ? (
                   <><PauseCircle className="mr-2 h-4 w-4 text-orange-500" /> Deactivate</>
                 ) : (
                   <><PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Activate</>
@@ -203,10 +193,10 @@ export default function TasksPage() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
-                onClick={() => setDeleteId(task._id)}
+                onClick={() => setDeleteId(item._id)}
                 className="text-red-600 focus:text-red-600 cursor-pointer"
               >
-                 <Trash2 className="mr-2 h-4 w-4" /> Delete Task
+                 <Trash2 className="mr-2 h-4 w-4" /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -221,21 +211,30 @@ export default function TasksPage() {
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Task Management</h1>
-          <p className="text-muted-foreground">Manage quizzes, surveys, and engagement tasks.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Daily Questions</h1>
+          <p className="text-muted-foreground">Manage the pool of daily engagement questions.</p>
         </div>
-        <Link href="/admin/tasks/new">
+        <Link href="/admin/questions/new">
           <Button>
-             <Plus className="mr-2 h-4 w-4" /> Create Task
+             <Plus className="mr-2 h-4 w-4" /> Add Question
           </Button>
         </Link>
       </div>
 
-      {/* SEARCH (Frontend Only) */}
+      {/* ERROR STATE */}
+      {isError && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>Failed to load questions.</AlertDescription>
+        </Alert>
+      )}
+
+      {/* SEARCH */}
       <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-2 rounded-lg border shadow-sm max-w-md">
         <Search className="h-4 w-4 text-muted-foreground ml-2" />
         <Input 
-          placeholder="Filter displayed tasks..." 
+          placeholder="Search question text..." 
           className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -244,14 +243,16 @@ export default function TasksPage() {
 
       {/* TABLE */}
       <Card>
-        <CardContent>
+        <CardContent className="">
           <AppTable 
             columns={columns}
-            data={filteredTasks}
+            data={filteredQuestions}
             isLoading={isLoading}
+            // ⚡ Pagination Wiring
             pageCount={data?.pagination?.totalPages || 1}
             pageIndex={page}
             onPageChange={setPage}
+            // Optional: Disable 'Next' button if we are using placeholder data (loading background)
           />
         </CardContent>
       </Card>
@@ -260,10 +261,13 @@ export default function TasksPage() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Task?</AlertDialogTitle>
+            <AlertDialogTitle>Delete Question?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete "{data?.data.find((t: any) => t._id === deleteId)?.title}". 
-              Users will no longer see this task.
+              Are you sure you want to delete this question?
+              <span className="bg-accent/20 p-2 rounded-full ml-2">
+                {/* 🛠️ FIX: Use .text instead of .title (which doesn't exist) */}
+                "{data?.data.find((q: any) => q._id === deleteId)?.text}"
+              </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -272,7 +276,7 @@ export default function TasksPage() {
               onClick={() => deleteId && deleteMutation.mutate(deleteId)}
               className="bg-red-600 hover:bg-red-700"
             >
-              Delete
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

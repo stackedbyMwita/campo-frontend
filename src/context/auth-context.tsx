@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
 
   // 1. Identify if we are on a Public Page (Login or Register)
-  const isAuthRoute = pathname?.startsWith("/login") || pathname?.startsWith("/signup") || pathname === "/";
+  const isAuthRoute = pathname?.startsWith("/login") || pathname?.startsWith("/register") || pathname === "/";
 
   // 2. Fetch User Profile
   const { data, isLoading: queryLoading, refetch, isError } = useQuery({

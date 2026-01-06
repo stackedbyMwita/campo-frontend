@@ -88,6 +88,7 @@ export const paymentAPI = {
 
   // Route: POST /payments/withdraw
   requestWithdrawal: async (data: WithdrawRequest) => {
+    console.log(data)
     const response = await api.post<ApiResponse<WithdrawalData>>("/payments/withdraw", data);
     return response.data.data;
   },

@@ -211,9 +211,6 @@ export function WithdrawDialog({ onWithdraw, isLoading, maxAmount, defaultPhone 
     if (val > maxKes) return toast.error("Insufficient funds");
     if (!phone || phone.length < 9) return toast.error("Invalid phone number");
 
-    // 2. Format Amount to CENTS
-    const amountInCents = val * 100;
-
     // 3. Format Phone (Remove 254 or leading 0, ensure it starts with 7 or 1)
     // Regex Logic: Remove non-digits, then strip '254' or '0' from start
     let formattedPhone = phone.replace(/\D/g, ''); // Remove spaces/dashes
@@ -229,7 +226,7 @@ export function WithdrawDialog({ onWithdraw, isLoading, maxAmount, defaultPhone 
     }
 
     // 4. Send to Backend
-    await onWithdraw(amountInCents, formattedPhone);
+    await onWithdraw(val, formattedPhone);
     setOpen(false);
   };
 

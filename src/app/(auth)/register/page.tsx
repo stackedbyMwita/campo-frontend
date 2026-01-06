@@ -158,7 +158,7 @@ export default function SignUpPage() {
                 control={form.control}
                 name="countryCode"
                 render={({ field }) => (
-                  <FormItem className="w-[110px]">
+                  <FormItem className="w-27.5">
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>

@@ -5,12 +5,13 @@ import {
   DashboardAnalytics, 
   AdminUser, 
   AdminUserDetails, 
-  AdminTask, 
-  CreateTaskDTO, 
+  AdminTask,
   AdminTransaction, 
   SystemConfig, 
   RiskReport,
-  SupportTicket 
+  SupportTicket, 
+  AdminQuestion,
+  CreateQuestionDTO
 } from "@/types/admin";
 
 export const adminApi = {
@@ -35,48 +36,77 @@ export const adminApi = {
     return response.data;
   },
 
+  // ✅ Matches backend: { tier: number }
+  updateUserTier: async (userId: string, tier: number) => {
+    const response = await api.patch<{ success: true, message: string }>(
+      `/admin/users/${userId}/segment`, 
+      { tier }
+    );
+    return response.data;
+  },
+
+  // ✅ Matches backend DTO exactly
+  updateUserBalance: async (userId: string, data: { 
+    amountInCents: number; 
+    type: 'BONUS' | 'PENALTY'; 
+    description: string; 
+    targetWallet: 'TASK_EARNINGS' | 'REFERRAL_WALLET';
+  }) => {
+    const response = await api.patch<{ success: true, message: string }>(
+      `/admin/users/${userId}/balance`, 
+      data
+    );
+    return response.data;
+  },
+
   getUserDetails: async (userId: string) => {
+    console.log(`This is the userId: ${userId}`)
     const response = await api.get<AdminSingleResponse<AdminUserDetails>>(`/admin/users/${userId}`);
     return response.data;
   },
 
-  updateUserBalance: async (userId: string, data: { amountInCents: number; type: string; description: string; targetWallet: string }) => {
-    const response = await api.patch<{ success: true, message: string }>(`/admin/users/${userId}/balance`, data);
-    return response.data;
-  },
+  // updateUserBalance: async (userId: string, data: { amountInCents: number; type: string; description: string; targetWallet: string }) => {
+  //   const response = await api.patch<{ success: true, message: string }>(`/admin/users/${userId}/balance`, data);
+  //   return response.data;
+  // },
 
-  updateUserTier: async (userId: string, tier: number) => {
-    const response = await api.patch<{ success: true, message: string }>(`/admin/users/${userId}/segment`, { tier });
-    return response.data;
-  },
+  // updateUserTier: async (userId: string, tier: number) => {
+  //   const response = await api.patch<{ success: true, message: string }>(`/admin/users/${userId}/segment`, { tier });
+  //   return response.data;
+  // },
 
   // ----------------------------------------------------------------
-  // ✅ TASKS
+  // ✅ QUESTIONS (Refactored from Tasks)
   // ----------------------------------------------------------------
-  getTasks: async (page = 1, limit = 10) => {
-    const response = await api.get<AdminPaginatedResponse<AdminTask>>(`/admin/tasks`, {
+  getQuestions: async (page = 1, limit = 20) => {
+    // Matches GET /questions
+    const response = await api.get<AdminPaginatedResponse<AdminQuestion>>(`/admin/questions`, {
       params: { page, limit }
     });
     return response.data;
   },
 
-  getTask: async (taskId: string) => {
-    const response = await api.get(`/admin/tasks${taskId}`)
+  getQuestion: async (questionId: string) => {
+    // Matches GET /questions/:questionId
+    const response = await api.get(`/admin/questions/${questionId}`);
     return response.data;
   },
 
-  createTask: async (data: CreateTaskDTO) => {
-    const response = await api.post<AdminSingleResponse<AdminTask>>("/admin/tasks", data);
+  createQuestion: async (data: CreateQuestionDTO) => {
+    // Matches POST /questions
+    const response = await api.post<AdminSingleResponse<AdminTask>>("/admin/questions", data);
     return response.data;
   },
 
-  updateTask: async (taskId: string, data: Partial<CreateTaskDTO>) => {
-    const response = await api.patch<AdminSingleResponse<AdminTask>>(`/admin/tasks/${taskId}`, data);
+  updateQuestion: async (questionId: string, data: Partial<CreateQuestionDTO>) => {
+    // Matches PATCH /questions/:questionId
+    const response = await api.patch<AdminSingleResponse<AdminTask>>(`/admin/questions/${questionId}`, data);
     return response.data;
   },
 
-  deleteTask: async (taskId: string) => {
-    const response = await api.delete<{ success: true, message: string }>(`/admin/tasks/${taskId}`);
+  deleteQuestion: async (questionId: string) => {
+    // Matches DELETE /questions/:questionId
+    const response = await api.delete<{ success: true, message: string }>(`/admin/questions/${questionId}`);
     return response.data;
   },
 

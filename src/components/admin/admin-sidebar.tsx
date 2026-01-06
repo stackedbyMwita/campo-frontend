@@ -36,7 +36,7 @@ const adminRoutes = [
   {
     label: "Task Center",
     icon: ListChecks,
-    href: "/admin/tasks",
+    href: "/admin/questions",
     color: "text-pink-500",
   },
   {

@@ -46,7 +46,7 @@ const data = {
     { title: "Settings", url: "/settings", icon: Settings },
     // You might want to hide Login/Signup if user is logged in
     { title: "Login", url: "/login", icon: LogIn },
-    { title: "Sign Up", url: "/signup", icon: DoorOpen },
+    { title: "Register", url: "/register", icon: DoorOpen },
   ]
 }
 

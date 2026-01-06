@@ -19,9 +19,7 @@ import {
 } from "@/components/ui/sheet";
 import { Trophy, CheckCircle2, Zap } from "lucide-react";
 import { toast } from "sonner";
-
-// Simple helper to format money
-const formatMoney = (amount: number) => `$${(amount / 100).toFixed(2)}`;
+import { formatMoney } from "@/lib/utils";
 
 interface TaskSheetProps {
   session: TaskSession | null;

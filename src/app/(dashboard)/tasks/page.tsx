@@ -76,7 +76,6 @@ export default function TasksPage() {
 
     try {
       await submitTask({ sessionId: taskSession.sessionId });
-      console.log(taskSession.sessionId)
       setIsSheetOpen(false); // Close on success
     } catch (e) {
       // Error handled in hook (Sonner toast)
@@ -118,7 +117,7 @@ export default function TasksPage() {
                   <CardTitle className="text-xl">{taskSession.title}</CardTitle>
                   <div className="flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
                     <Coins className="w-4 h-4" />
-                    +{taskSession.reward} 
+                    + {formatMoney(taskSession.reward)} 
                   </div>
                 </div>
               </CardHeader>

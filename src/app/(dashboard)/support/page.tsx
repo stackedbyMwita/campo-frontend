@@ -169,7 +169,7 @@ export default function SupportPage() {
       <div className="flex flex-1 border rounded-xl overflow-hidden shadow-sm bg-card">
         
         {/* LEFT PANE: TICKET LIST */}
-        <div className="w-full md:w-[350px] lg:w-[400px] border-r flex flex-col bg-muted/10">
+        <div className="w-full md:w-87.5 lg:w-100 border-r flex flex-col bg-muted/10">
           
           {/* Search */}
           <div className="p-4 border-b">

@@ -22,6 +22,12 @@ export default function Home() {
         <Link href="/dashboard">
           <Button>Dashboard</Button>
         </Link>
+        <Link href="/dashboard">
+          <Button>Login</Button>
+        </Link>
+        <Link href="/dashboard">
+          <Button>Register</Button>
+        </Link>
       </div>
       {/* 1. Primary Card */}
       <Card className="w-75 border-primary/20 shadow-lg">

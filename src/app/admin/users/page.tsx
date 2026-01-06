@@ -106,7 +106,7 @@ const userColumns: ColumnDef<AdminUser>[] = [
     header: () => <div className="text-right">Balance</div>,
     cell: ({ row }) => {
       // Assuming 'walletBalance' is the withdrawable amount
-      const balance = row.original.wallet?.walletBalance || 0;
+      const balance = row.original.wallet?.referralEarnings || 0;
       return (
         <div className="text-right font-medium">
           {formatMoney(balance)}
@@ -217,5 +217,4 @@ export default function UsersPage() {
       </Card>
     </div>
   );
-
 }

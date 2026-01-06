@@ -66,7 +66,7 @@ export function useSubmitTask() {
       const rewardAmount = response?.data?.reward ?? response?.reward ?? 0;
 
       toast.success("Task Completed!", {
-        description: `You earned ${formatMoney(rewardAmount)} cents.`,
+        description: `You earned ${formatMoney(rewardAmount)}. Awaiting for admin approval before withdrawing.`,
       });
 
       // 3. Refresh Data

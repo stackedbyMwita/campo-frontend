@@ -27,8 +27,7 @@ import { DashboardWidget } from "@/components/dashboard/dashboard-widget";
 // Hooks & API
 import { useAuth } from "@/context/auth-context";
 import { useWallet } from "@/hooks/use-wallet";
-import { userAPI } from "@/services/api"; // For referrals
-import { PageTitle } from "@/components/page-title";
+import { userAPI } from "@/services/api";
 import { formatMoney } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -107,11 +106,11 @@ export default function DashboardPage() {
         {/* Card 2: Total Earnings */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
+            <CardTitle className="text-sm font-medium">Tasks Earnings</CardTitle>
             <TrendingUp className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatMoney(totalEarnings)}</div>
+            <div className="text-2xl font-bold">{formatMoney(balance?.taskEarnings)}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Lifetime gross income
             </p>
@@ -121,12 +120,27 @@ export default function DashboardPage() {
         {/* Card 3: Tasks Available */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tasks Available</CardTitle>
+            <CardTitle className="text-sm font-medium">Referrals Earnings</CardTitle>
             <ListTodo className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-               2
+               {formatMoney(balance?.referralEarnings)}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Fresh tasks for today
+            </p>
+          </CardContent>
+        </Card>
+        {/* Card 3: Tasks Available */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total tasks completed</CardTitle>
+            <ListTodo className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+               20
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               Fresh tasks for today

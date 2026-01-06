@@ -66,36 +66,32 @@ export interface AdminUserDetails {
   };
 }
 
-// --- 3. TASKS ---
+// 1. Keep this for creating complex tasks later if needed
 export interface AdminTask {
   _id: string;
   title: string;
   description: string;
-  type: TaskQuestionType | "mixed";
-  rewardMultiplier: number; // Note: Response shows multiplier, not fixed reward
+  rewardMultiplier: number;
   isActive: boolean;
-  questions: {
-    text: string;
-    options?: string[];
-    expectedAnswer: string;
-    _id?: string;
-  }[];
-  expiresAt: string;
-  createdAt: string;
+  questions: any[]; 
 }
 
-export interface CreateTaskDTO {
-  title: string;
-  description: string;
-  type: string;
-  rewardMultiplier?: number;
-  expiresAt: string; // ISO Date string
+// 2. ✅ NEW: Matches your actual Backend JSON Response
+export interface AdminQuestion {
+  _id: string;
+  text: string;           // Matches JSON "text"
+  type: 'mcq' | 'text';   // Matches JSON "type"
+  options: string[];      // Matches JSON "options"
+  isActive: boolean;      // Matches JSON "isActive"
+  createdAt: string;      // Matches JSON "createdAt"
+  updatedAt: string;
+}
+
+export interface CreateQuestionDTO {
+  text: string;
+  type: 'mcq' | 'text';
   isActive: boolean;
-  questions: {
-    text: string;
-    options?: string[]; // Optional for Text tasks
-    expectedAnswer: string;
-  }[];
+  options?: string[]; 
 }
 
 // --- 4. TRANSACTIONS / WITHDRAWALS ---
